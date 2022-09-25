@@ -1,9 +1,25 @@
-import type { NextPage } from 'next'
-import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
+import axios from "axios";
+import type { NextPage } from "next";
+import Head from "next/head";
+import Image from "next/image";
+import { useState } from "react";
+import styles from "../styles/Home.module.css";
 
 const Home: NextPage = () => {
+  const [cardNumber, setCardNumber] = useState("4111111111111111");
+  const [cardExpiry, setCardExpiry] = useState("01/20");
+  const [securityCode, setSecurityCode] = useState("123");
+  const [token, setToken] = useState<string | null>(null);
+
+  const handleCreateToken = async () => {
+    const { data } = await axios.post("https://api.veritrans.co.jp/4gtoken", {
+      card_number: cardNumber,
+      card_expire: cardExpiry,
+      security_code: securityCode,
+      token_api_key: 'cd76ca65-7f54-4dec-8ba3-11c12e36a548',
+    });
+    setToken(data.token);
+  };
   return (
     <div className={styles.container}>
       <Head>
@@ -18,38 +34,16 @@ const Home: NextPage = () => {
         </h1>
 
         <p className={styles.description}>
-          Get started by editing{' '}
+          Get started by editing{" "}
           <code className={styles.code}>pages/index.tsx</code>
         </p>
 
         <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+          <input placeholder="カード番号" type="text" value={cardNumber} onChange={(e) => setCardNumber(e.target.value)} />
+          <input placeholder="有効期限" type="text" value={cardExpiry} onChange={(e) => setCardExpiry(e.target.value)} />
+          <input placeholder="セキュリティーコード" type="text" value={securityCode} onChange={(e) => setSecurityCode(e.target.value)} />
+          <button onClick={handleCreateToken}>Create Token</button>
+          <div>Result: {token}</div>
         </div>
       </main>
 
@@ -59,14 +53,14 @@ const Home: NextPage = () => {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Powered by{' '}
+          Powered by{" "}
           <span className={styles.logo}>
             <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
           </span>
         </a>
       </footer>
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
